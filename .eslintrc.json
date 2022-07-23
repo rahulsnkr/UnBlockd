@@ -8,16 +8,18 @@
         "google"
     ],
     "parserOptions": {
+        "ecmaVersion": 12,
+        "sourceType": "module",
         "ecmaFeatures": {
-            "jsx": true
-        },
-        "ecmaVersion": "latest",
-        "sourceType": "module"
+            "modules": true
+        }
     },
     "plugins": [
         "react"
     ],
     "rules": {
-        "react/prop-types": "off"
+        "react/prop-types": "off",
+        "require-jsdoc": "off",
+        "new-cap": "off"
     }
 }
