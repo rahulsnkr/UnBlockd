@@ -40,7 +40,7 @@ class App extends Component {
     event.stopPropagation();
     event.preventDefault();
     const SSN = parseInt(event.target.value, 10);
-    setState({SSN: SSN});
+    this.setState({SSN: SSN});
   }
 
   captureFile = (isFace) => (event) => {
@@ -49,37 +49,37 @@ class App extends Component {
     const file = event.target.files[0];
     const reader = new window.FileReader();
     reader.readAsArrayBuffer(file);
-    reader.onloadend = () => convertToBuffer(reader, isFace);
+    reader.onloadend = () => this.convertToBuffer(reader, isFace);
   };
 
   convertToBuffer = async (reader, isFace) => {
     // file is converted to a buffer for upload to IPFS
-    const aesCtr = new aesjs.ModeOfOperation.ctr(state.aesKey);
+    const aesCtr = new aesjs.ModeOfOperation.ctr(this.state.aesKey);
     if (isFace) {
       const faceByteArray = new Uint8Array(reader.result);
       const faceEncrypted = aesCtr.encrypt(faceByteArray);
       const faceBuffer = await Buffer.from(faceEncrypted);
-      setState({faceBuffer});
+      this.setState({faceBuffer});
     } else {
       const sigByteArray = new Uint8Array(reader.result);
       const sigEncrypted = aesCtr.encrypt(sigByteArray);
       const sigBuffer = await Buffer.from(sigEncrypted);
       console.log(sigBuffer);
-      setState({sigBuffer});
+      this.setState({sigBuffer});
     }
   };
 
   onClick = async () => {
     try {
-      setState({blockNumber: 'waiting..'});
-      setState({gasUsed: 'waiting...'});
+      this.setState({blockNumber: 'waiting..'});
+      this.setState({gasUsed: 'waiting...'});
 
       await web3.eth.getTransactionReceipt(
-          state.transactionHash, (err, txReceipt) => {
-            setState({txReceipt});
+          this.state.transactionHash, (err, txReceipt) => {
+            this.setState({txReceipt});
           });
-      await setState({blockNumber: state.txReceipt.blockNumber});
-      await setState({gasUsed: state.txReceipt.gasUsed});
+      await this.setState({blockNumber: this.state.txReceipt.blockNumber});
+      await this.setState({gasUsed: this.state.txReceipt.gasUsed});
     } catch (error) {
       console.log(error);
     }
@@ -93,25 +93,25 @@ class App extends Component {
     console.log('Sending from Metamask account: ' + accounts[0]);
     // obtain contract address from storehash.js
     const ethAddress = await storehash.options.address;
-    setState({ethAddress});
+    this.setState({ethAddress});
     // save document to IPFS,return its hash#, and set hash# to state
     // https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#add
 
-    await ipfs.add(state.faceBuffer, async (err, ipfsFaceHash) => {
+    await ipfs.add(this.state.faceBuffer, async (err, ipfsFaceHash) => {
       console.log(err, ipfsFaceHash);
-      setState({ipfsFaceHash: ipfsFaceHash[0].hash});
-      await ipfs.add(state.sigBuffer, (err, ipfsSigHash) => {
+      this.setState({ipfsFaceHash: ipfsFaceHash[0].hash});
+      await ipfs.add(this.state.sigBuffer, (err, ipfsSigHash) => {
         console.log(err, ipfsSigHash);
-        setState({ipfsSigHash: ipfsSigHash[0].hash});
-        console.log(state.ipfsFaceHash, state.ipfsSigHash);
+        this.setState({ipfsSigHash: ipfsSigHash[0].hash});
+        console.log(this.state.ipfsFaceHash, this.state.ipfsSigHash);
         storehash.methods.sendHashes(
-            state.SSN,
-            state.ipfsFaceHash,
-            state.ipfsSigHash).send({
+            this.state.SSN,
+            this.state.ipfsFaceHash,
+            this.state.ipfsSigHash).send({
           from: accounts[0],
         }, (error, transactionHash) => {
           console.log(transactionHash);
-          setState({transactionHash});
+          this.setState({transactionHash});
         });
       });
     });
@@ -125,18 +125,18 @@ class App extends Component {
     console.log('Sending from Metamask account: ' + accounts[0]);
     // obtain contract address from storehash.js
     const ethAddress = await storehash.options.address;
-    setState({ethAddress});
+    this.setState({ethAddress});
     // save document to IPFS,return its hash#, and set hash# to state
     // https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#add
 
-    storehash.methods.getHashes(state.SSN).call({
+    storehash.methods.getHashes(this.state.SSN).call({
       from: accounts[0],
     }, (err, res) => {
       console.log(err, res);
-      setState({SSNipfsFaceHash: res.faceHash});
-      setState({SSNipfsSigHash: res.sigHash});
+      this.setState({SSNipfsFaceHash: res.faceHash});
+      this.setState({SSNipfsSigHash: res.sigHash});
       ipfs.files.get(res.faceHash, (err, files) => {
-        const aesCtr = new aesjs.ModeOfOperation.ctr(state.aesKey);
+        const aesCtr = new aesjs.ModeOfOperation.ctr(this.state.aesKey);
         const faceDecrypted = aesCtr.decrypt(files[0].content);
         console.log(files[0].content);
         const faceBlob = new Blob( [faceDecrypted], {type: 'image/jpeg'} );
@@ -146,7 +146,7 @@ class App extends Component {
         faceLink.href = faceURL;
         faceLink.click();
         ipfs.files.get(res.sigHash, (err, sigFiles) => {
-          const aesCtr = new aesjs.ModeOfOperation.ctr(state.aesKey);
+          const aesCtr = new aesjs.ModeOfOperation.ctr(this.state.aesKey);
           console.log(sigFiles);
           const sigDecrypted = aesCtr.decrypt(sigFiles[0].content);
           const sigBlob = new Blob( [sigDecrypted], {type: 'image/jpeg'} );
@@ -162,16 +162,20 @@ class App extends Component {
 
   onSSNClick = async () => {
     try {
-      setState({SSNblockNumber: 'waiting..'});
-      setState({SSNgasUsed: 'waiting...'});
+      this.setState({SSNblockNumber: 'waiting..'});
+      this.setState({SSNgasUsed: 'waiting...'});
 
       await web3.eth.getTransactionReceipt(
-          state.SSNtransactionHash, (err, SSNtxReceipt) => {
+          this.state.SSNtransactionHash, (err, SSNtxReceipt) => {
             console.log(err, SSNtxReceipt);
-            setState({SSNtxReceipt});
+            this.setState({SSNtxReceipt});
           });
-      await setState({SSNblockNumber: state.SSNtxReceipt.blockNumber});
-      await setState({SSNgasUsed: state.SSNtxReceipt.gasUsed});
+      await this.setState(
+          {SSNblockNumber: this.state.SSNtxReceipt.blockNumber},
+      );
+      await this.setState(
+          {SSNgasUsed: this.state.SSNtxReceipt.gasUsed},
+      );
     } catch (error) {
       console.log(error);
     }
@@ -179,17 +183,17 @@ class App extends Component {
 
   setFaceCallback = (mode, img) => {
     if (mode === 0) {
-      setState({faceImg1: img});
+      this.setState({faceImg1: img});
     } else {
-      setState({faceImg2: img});
+      this.setState({faceImg2: img});
     }
   }
 
   setSignCallback = (mode, img) => {
     if (mode === 0) {
-      setState({signImg1: img});
+      this.setState({signImg1: img});
     } else {
-      setState({signImg2: img});
+      this.setState({signImg2: img});
     }
   }
 
@@ -208,21 +212,21 @@ class App extends Component {
           <Tab eventKey="onboarding" title="Onboarding">
             <Container>
               <h3> Choose face and signature images to send to IPFS </h3>
-              <Form onSubmit={onSubmit}>
+              <Form onSubmit={this.onSubmit}>
                 SSN &nbsp;
                 <input
                   type="text"
-                  onChange={captureSSN}
+                  onChange={this.captureSSN}
                 />
                 <h5>Select Face Image</h5>
                 <input
                   type="file"
-                  onChange={captureFile(true)}
+                  onChange={this.captureFile(true)}
                 />
                 <h5>Select signature Image</h5>
                 <input
                   type="file"
-                  onChange={captureFile(false)}
+                  onChange={this.captureFile(false)}
                 />
                 <Button
                   bsStyle="primary"
@@ -231,7 +235,7 @@ class App extends Component {
                 </Button>
               </Form>
               <hr />
-              <Button onClick={onClick}> Get Transaction Receipt </Button>
+              <Button onClick={this.onClick}> Get Transaction Receipt </Button>
               <Table bordered>
                 <thead>
                   <tr>
@@ -243,27 +247,27 @@ class App extends Component {
                 <tbody>
                   <tr>
                     <td>IPFS Face Hash # stored on Eth Contract</td>
-                    <td>{state.ipfsFaceHash}</td>
+                    <td>{this.state.ipfsFaceHash}</td>
                   </tr>
                   <tr>
                     <td>IPFS Sign Hash # stored on Eth Contract</td>
-                    <td>{state.ipfsSigHash}</td>
+                    <td>{this.state.ipfsSigHash}</td>
                   </tr>
                   <tr>
                     <td>Ethereum Contract Address</td>
-                    <td>{state.ethAddress}</td>
+                    <td>{this.state.ethAddress}</td>
                   </tr>
                   <tr>
                     <td>Tx Hash # </td>
-                    <td>{state.transactionHash}</td>
+                    <td>{this.state.transactionHash}</td>
                   </tr>
                   <tr>
                     <td>Block Number # </td>
-                    <td>{state.blockNumber}</td>
+                    <td>{this.state.blockNumber}</td>
                   </tr>
                   <tr>
                     <td>Gas Used</td>
-                    <td>{state.gasUsed}</td>
+                    <td>{this.state.gasUsed}</td>
                   </tr>
 
                 </tbody>
@@ -274,11 +278,11 @@ class App extends Component {
               <h3>
                 Enter SSN to retrieve face and signature images from IPFS
               </h3>
-              <Form onSubmit={onSSNSubmit}>
+              <Form onSubmit={this.onSSNSubmit}>
                 SSN &nbsp;
                 <input
                   type="text"
-                  onChange={captureSSN}
+                  onChange={this.captureSSN}
                 />
                 <div>
                   <Button
@@ -289,7 +293,11 @@ class App extends Component {
                 </div>
               </Form>
               <hr />
-              <Button onClick={onSSNClick}> Get Transaction Receipt </Button>
+              <Button
+                onClick={this.onSSNClick}
+              >
+                Get Transaction Receipt
+              </Button>
               <Table bordered>
                 <thead>
                   <tr>
@@ -301,15 +309,15 @@ class App extends Component {
                 <tbody>
                   <tr>
                     <td>IPFS Face Hash # returned by Eth Contract</td>
-                    <td>{state.SSNipfsFaceHash}</td>
+                    <td>{this.state.SSNipfsFaceHash}</td>
                   </tr>
                   <tr>
                     <td>IPFS Sign Hash # returned by Eth Contract</td>
-                    <td>{state.SSNipfsSigHash}</td>
+                    <td>{this.state.SSNipfsSigHash}</td>
                   </tr>
                   <tr>
                     <td>Ethereum Contract Address</td>
-                    <td>{state.ethAddress}</td>
+                    <td>{this.state.ethAddress}</td>
                   </tr>
                 </tbody>
               </Table>
@@ -318,18 +326,18 @@ class App extends Component {
           <Tab eventKey="access" title="Access Control">
             <h5>Select first set of images</h5>
             <ImageUpload
-              setFace={setFaceCallback}
-              setSign={setSignCallback}
+              setFace={this.setFaceCallback}
+              setSign={this.setSignCallback}
               mode={0}
             />
             <hr />
             <h5>Select second set of images</h5>
             <ImageUpload
-              setFace={setFaceCallback}
-              setSign={setSignCallback}
+              setFace={this.setFaceCallback}
+              setSign={this.setSignCallback}
               mode={1}
             />
-            <Inference state={state} />
+            <Inference state={this.state} />
           </Tab>
         </Tabs>
       </div>
