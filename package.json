@@ -3,17 +3,29 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@tensorflow/tfjs": "^3.18.0",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
+    "aes-js": "^3.1.2",
+    "bootstrap": "^3.4.1",
+    "fs-extra": "^10.0.0",
+    "ipfs-api": "^26.1.2",
+    "opencv.js": "^1.2.1",
     "react": "^17.0.2",
+    "react-bootstrap": "^2.1.0",
     "react-dom": "^17.0.2",
-    "react-scripts": "5.0.0",
-    "web-vitals": "^2.1.2"
+    "react-scripts": "4.0.3",
+    "react-spinners": "^0.13.3",
+    "web-vitals": "^2.1.2",
+    "web3": "^1.6.1"
+  },
+  "browser": {
+    "crypto": false
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "react-scripts  --max_old_space_size=8192 start",
+    "build": "react-scripts  --max_old_space_size=8192 build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -34,5 +46,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-react": "^7.30.1"
   }
 }
