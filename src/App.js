@@ -6,6 +6,7 @@ import web3 from './web3';
 import ipfs from './ipfs';
 import storehash from './storeHash';
 import aesjs from 'aes-js';
+import {sha256} from 'js-sha256';
 import {ImageUpload} from './components/ImageUpload';
 import {Inference} from './components/Inference';
 
@@ -105,7 +106,7 @@ class App extends Component {
         this.setState({ipfsSigHash: ipfsSigHash[0].hash});
         console.log(this.state.ipfsFaceHash, this.state.ipfsSigHash);
         storehash.methods.sendHashes(
-            this.state.SSN,
+            sha256(this.state.SSN.toString()),
             this.state.ipfsFaceHash,
             this.state.ipfsSigHash).send({
           from: accounts[0],
@@ -129,7 +130,7 @@ class App extends Component {
     // save document to IPFS,return its hash#, and set hash# to state
     // https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#add
 
-    storehash.methods.getHashes(this.state.SSN).call({
+    storehash.methods.getHashes(sha256(this.state.SSN.toString())).call({
       from: accounts[0],
     }, (err, res) => {
       console.log(err, res);
