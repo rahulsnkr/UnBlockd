@@ -1,6 +1,17 @@
-# Getting Started with Create React App
+# UnBlockd
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+This project aims to implement a multimodal biometric security system that uses face and signature images to grant access, along with decentralized secure onboarding.
+The two sections of this project are-
+ - **Onboarding**: Users can onboard by uploading an image of their face and signature. These images are then encrypted and uploaded to IPFS, and their corresponding hashes are stored on the blockchain along with the user's SSN.
+ - **Access Control**: An admin can retrieve the user's images from the blockchain by specifying the user's SSN. To grant access, the user must provide a face and signature image, which would be compared with the images they provided during onboarding. A multimodal siamese network is used for this process, the details of which can be found in [this repo](https://github.com/rahulsnkr/multimodal-siamese-neural-network).
+ 
+## Key Features
+  - **AES Encryption**: All images are encrypted with public key cryptography before storage, and are decrypted after retrieval. Everything is done on the client's machine.
+  - **Decentralized storage**: Since images are stored in a decentralized manner, there is no need to trust a central entity with sensitive data.
+  - **Deep Learning Security System**: Due to the deep learning based approach opted for this, the client can choose to upload a different set of images than the one they used for onboarding
+  - **Data Locality**: The client's data never leaves the machine for access control. The security system runs entirely in the browser.
 
 ## Available Scripts
 
@@ -14,10 +25,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Sample images are present in `src/sample_imgs` for testing
 
 ### `npm run build`
 
@@ -26,45 +34,3 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
